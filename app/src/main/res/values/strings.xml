@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BLE Sniffer</string>
+    <string name="startButton">Start</string>
+    <string name="stopButton">Stop</string>
+    <string name="markButton">Mark</string>
+    <string name="exportButton">Export Data</string>
+    <string name="startToast">Packet sniffing has started</string>
+    <string name="stopToast">Packet sniffing has stopped</string>
+    <string name="markToast">Marking!</string>
+    <string name="exportToast">Exporting Data</string>
+</resources>
