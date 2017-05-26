@@ -44,6 +44,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         Button stopButton = (Button) findViewById(R.id.stopButton);
         Button markButton = (Button) findViewById(R.id.markButton);
         Button exportButton = (Button) findViewById(R.id.exportButton);
+        Button clearButton = (Button) findViewById(R.id.clearButton);
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().
@@ -72,6 +73,13 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
             }
         });
 
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearing();
+            }
+        });
+
         exportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,61 +99,70 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
     public void binding(){
         if(!beaconManager.isBound(this)) {
             baseTime = System.currentTimeMillis();
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.startToast),
-                    Toast.LENGTH_SHORT).show();
+            raiseAtoast(R.string.startToast);
             data.add(new String[]{"Timestamp", "MAC Address", "RSSI (in dBm)", "Mark"});
             beaconManager.bind(this);
         }
         else {
-            Toast.makeText(getApplicationContext(), "Press Stop before starting again",
-                    Toast.LENGTH_LONG).show();
+           raiseAtoast(R.string.startBeforeStop);
         }
     }
 
     public void unbinding(){
         if(beaconManager.isBound(this)) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.stopToast),
-                    Toast.LENGTH_SHORT).show();
+           raiseAtoast(R.string.stopToast);
             clickCount=0;
             beaconManager.unbind(this);
         }
         else{
-            Toast.makeText(getApplicationContext(), "Press Start to Sniff packets",
-                    Toast.LENGTH_LONG).show();
+           raiseAtoast(R.string.stopBeforeStart);
         }
     }
 
     public void marking(){
         if(beaconManager.isBound(this)) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.markToast),
-                    Toast.LENGTH_SHORT).show();
+            raiseAtoast(R.string.markToast);
             clickCount += 1;
         }
         else{
-            Toast.makeText(getApplicationContext(), "Press Start before setting Markers",
-                    Toast.LENGTH_LONG).show();
+            raiseAtoast(R.string.markingError);
+        }
+    }
+
+    public void clearing(){
+        TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
+        editText.setText("");
+        data = new ArrayList<>();
+        raiseAtoast(R.string.clearToast);
+        if(beaconManager.isBound(this)) {
+            data.add(new String[]{"Timestamp", "MAC Address", "RSSI (in dBm)", "Mark"});
         }
     }
 
     public void exportData(String filename) throws IOException{
         TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
-        if(editText.equals("")){
-            Toast.makeText(getApplicationContext(), "Error: No Data has been collected!",
-                    Toast.LENGTH_LONG).show();
+        if(editText.getText().toString().equals("")){
+            raiseAtoast(R.string.noData);
         }
         else if(beaconManager.isBound(this)) {
-            Toast.makeText(getApplicationContext(), "Error: Data collection is taking place!",
-                    Toast.LENGTH_LONG).show();
+            raiseAtoast(R.string.DataCollectionInterrupt);
         }
         else if(filename.equals("")){
-            Toast.makeText(getApplicationContext(), "Please give a suitable file name!",
-                    Toast.LENGTH_LONG).show();
+            raiseAtoast(R.string.noFilename);
         }
         else{
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.exportToast),
-                    Toast.LENGTH_LONG).show();
-            String csv = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData/";
-            File file = new File(csv + filename + ".csv");
+            raiseAtoast(R.string.exportToast);
+
+            String dirString = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData/";
+            File directory = new File(android.os.Environment.getExternalStorageDirectory(),dirString);
+
+            if(!directory.exists()) {
+                if(!directory.mkdirs()){
+                    raiseAtoast(R.string.noDirectory);
+                }
+            }
+
+            File file = new File(dirString + filename + ".csv");
             if (!file.exists()) {
                 FileWriter fwriter = new FileWriter(file, false);
                 CSVWriter writer = new CSVWriter(fwriter);
@@ -155,10 +172,10 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
                 editText.setText("");
                 EditText filen = (EditText) findViewById(R.id.filename);
                 filen.setText("");
+                raiseAtoast(R.string.success);
             }
             else{
-                Toast.makeText(getApplicationContext(), "Error: File already exists!",
-                        Toast.LENGTH_LONG).show();
+                raiseAtoast(R.string.existingFile);
             }
         }
     }
@@ -203,8 +220,8 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         try {
             if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Bluetooth not enabled");
-                builder.setMessage("Please enable bluetooth in settings and restart this application.");
+                builder.setTitle(getApplicationContext().getString(R.string.noBluetooth));
+                builder.setMessage(getApplicationContext().getString(R.string.noBluetoothMessage));
                 builder.setPositiveButton(android.R.string.ok, null);
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -218,8 +235,8 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         }
         catch (RuntimeException e) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Bluetooth LE not available");
-            builder.setMessage("Sorry, this device does not support Bluetooth LE.");
+            builder.setTitle(getApplicationContext().getString(R.string.noBLE));
+            builder.setMessage(getApplicationContext().getString(R.string.noBLEMessage));
             builder.setPositiveButton(android.R.string.ok, null);
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
@@ -238,10 +255,16 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         runOnUiThread(new Runnable() {
             public void run() {
                 TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
-                editText.setMovementMethod(new ScrollingMovementMethod());
+                ScrollingMovementMethod scroll = new ScrollingMovementMethod();
+                editText.setMovementMethod(scroll);
                 editText.append(line + "\n");
             }
         });
+    }
+
+    private void raiseAtoast(int resID){
+        Toast.makeText(getApplicationContext(), getApplicationContext().getString(resID),
+                Toast.LENGTH_SHORT).show();
     }
 
 }

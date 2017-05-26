@@ -25,9 +25,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/startButton"
+        android:layout_marginBottom="23dp"
         android:layout_above="@+id/exportButton"
-        android:layout_toStartOf="@+id/markButton"
-        android:layout_marginBottom="21dp" />
+        android:layout_toStartOf="@+id/filePrompt" />
 
     <Button
         android:id="@+id/stopButton"
@@ -36,7 +36,7 @@
         android:text="@string/stopButton"
         android:layout_alignBaseline="@+id/startButton"
         android:layout_alignBottom="@+id/startButton"
-        android:layout_toEndOf="@+id/markButton" />
+        android:layout_toEndOf="@+id/filePrompt" />
 
     <TextView
         android:id="@+id/rangingText"
@@ -47,6 +47,7 @@
         android:layout_above="@+id/markButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
+        android:gravity="bottom"
         android:layout_marginTop="100dp"
         android:layout_alignParentTop="true" />
 
@@ -78,4 +79,12 @@
         android:layout_marginRight="10dp"
         android:layout_below="@+id/filePrompt"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/markButton"
+        android:layout_alignTop="@+id/startButton"
+        android:text="@string/clearButton" />
 </RelativeLayout>

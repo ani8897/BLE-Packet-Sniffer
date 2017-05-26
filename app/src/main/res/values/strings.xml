@@ -1,11 +1,32 @@
 <resources>
     <string name="app_name">BLE Sniffer</string>
+
     <string name="startButton">Start</string>
     <string name="stopButton">Stop</string>
     <string name="markButton">Mark</string>
     <string name="exportButton">Export Data</string>
+    <string name="clearButton">Clear</string>
+
     <string name="startToast">Packet sniffing has started</string>
     <string name="stopToast">Packet sniffing has stopped</string>
     <string name="markToast">Marking!</string>
     <string name="exportToast">Exporting Data</string>
+    <string name="clearToast">Data has been cleared</string>
+
+    <!-- Prompts -->
+    <string name="success">Successful</string>
+    <string name="noBluetooth">Bluetooth not enabled</string>
+    <string name="noBluetoothMessage">Please enable bluetooth in settings and restart this application.</string>
+    <string name="noBLE">Bluetooth LE not available</string>
+    <string name="noBLEMessage">Sorry, this device does not support Bluetooth LE.</string>
+
+    <!-- Error messages-->
+    <string name="startBeforeStop">Press Stop before starting again</string>
+    <string name="stopBeforeStart">Press Start to Sniff packets</string>
+    <string name="markingError">Press Start before setting Markers</string>
+    <string name="noData">Error: No Data has been collected!</string>
+    <string name="DataCollectionInterrupt">Error: Data collection is taking place!</string>
+    <string name="noFilename">Please give a suitable file name!</string>
+    <string name="existingFile">Error: File already exists!</string>
+    <string name="noDirectory">Unsuccessful</string>
 </resources>
