@@ -38,18 +38,64 @@
         android:layout_alignBottom="@+id/startButton"
         android:layout_toEndOf="@+id/filePrompt" />
 
-    <TextView
-        android:id="@+id/rangingText"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:scrollbars = "vertical"
+        android:layout_height="match_parent"
         android:layout_above="@+id/markButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:gravity="bottom"
-        android:layout_marginTop="100dp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="100dp">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="vertical"
+            android:layout_gravity="bottom"
+            android:maxLines = "20"
+            android:text="">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <TextView
+                    android:id="@+id/timeStamp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="bottom"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:layout_weight="4"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/rssi"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:layout_weight="2"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/mark"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:layout_weight="1"
+                    android:text="" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
     <Button
         android:id="@+id/exportButton"
@@ -66,7 +112,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="26dp"
-        android:text="Enter Filename Here:" />
+        android:text="@string/filePrompt" />
 
     <EditText
         android:id="@+id/filename"
@@ -87,4 +133,5 @@
         android:layout_alignEnd="@+id/markButton"
         android:layout_alignTop="@+id/startButton"
         android:text="@string/clearButton" />
+
 </RelativeLayout>

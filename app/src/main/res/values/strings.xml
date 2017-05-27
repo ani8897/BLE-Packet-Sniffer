@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">BLE Sniffer</string>
 
+    <!--Button names-->
     <string name="startButton">Start</string>
     <string name="stopButton">Stop</string>
     <string name="markButton">Mark</string>
     <string name="exportButton">Export Data</string>
     <string name="clearButton">Clear</string>
 
+    <!-- Toast messages on pressing the buttons-->
     <string name="startToast">Packet sniffing has started</string>
     <string name="stopToast">Packet sniffing has stopped</string>
     <string name="markToast">Marking!</string>
@@ -15,6 +17,7 @@
 
     <!-- Prompts -->
     <string name="success">Successful</string>
+    <string name="filePrompt">Enter Filename:</string>
     <string name="noBluetooth">Bluetooth not enabled</string>
     <string name="noBluetoothMessage">Please enable bluetooth in settings and restart this application.</string>
     <string name="noBLE">Bluetooth LE not available</string>

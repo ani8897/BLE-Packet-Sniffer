@@ -2,6 +2,8 @@ package com.example.root.bluetoothpacketsniffer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.os.RemoteException;
 import android.os.Bundle;
@@ -130,8 +132,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
     }
 
     public void clearing(){
-        TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
-        editText.setText("");
+        clearView();
         data = new ArrayList<>();
         raiseAtoast(R.string.clearToast);
         if(beaconManager.isBound(this)) {
@@ -140,7 +141,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
     }
 
     public void exportData(String filename) throws IOException{
-        TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
+        TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.timeStamp);
         if(editText.getText().toString().equals("")){
             raiseAtoast(R.string.noData);
         }
@@ -153,23 +154,22 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         else{
             raiseAtoast(R.string.exportToast);
 
-            String dirString = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData/";
-            File directory = new File(android.os.Environment.getExternalStorageDirectory(),dirString);
-
+            String dirString = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData";
+            File directory = new File(dirString);
             if(!directory.exists()) {
-                if(!directory.mkdirs()){
-                    raiseAtoast(R.string.noDirectory);
-                }
+                Log.i(TAG,"No directory");
+                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+                directory = cw.getDir(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData", Context.MODE_PRIVATE);
             }
 
-            File file = new File(dirString + filename + ".csv");
+            File file = new File(dirString + "/" + filename + ".csv");
             if (!file.exists()) {
                 FileWriter fwriter = new FileWriter(file, false);
                 CSVWriter writer = new CSVWriter(fwriter);
                 writer.writeAll(data);
                 writer.close();
                 data = new ArrayList<>();
-                editText.setText("");
+                clearView();
                 EditText filen = (EditText) findViewById(R.id.filename);
                 filen.setText("");
                 raiseAtoast(R.string.success);
@@ -198,12 +198,14 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
                     for(int i=0;i<s;i++) {
                         Log.i(TAG, "Time:"+timeStamp+" Address: " + beaconArr[i].getBluetoothAddress()
                                 + " RSSI: " + beaconArr[i].getRssi() + " Marker: " + clickCount);
-                        logToDisplay(timeStamp
-                                + "         -           " +  beaconArr[i].getBluetoothAddress()
-                                + "         -           " + beaconArr[i].getRssi()
-                                + "         -           " + clickCount);
-                        data.add(new String[]{Long.toString(timeStamp),beaconArr[i].getBluetoothAddress(),
-                                Integer.toString(beaconArr[i].getRssi()), Integer.toString(clickCount)});
+                        logToDisplay(Long.toString(timeStamp),
+                                beaconArr[i].getBluetoothAddress(),
+                                Integer.toString(beaconArr[i].getRssi()),
+                                Integer.toString(clickCount));
+                        data.add(new String[]{Long.toString(timeStamp),
+                                beaconArr[i].getBluetoothAddress(),
+                                Integer.toString(beaconArr[i].getRssi()),
+                                Integer.toString(clickCount)});
                     }
                 }
             }
@@ -251,15 +253,30 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         }
     }
 
-    private void logToDisplay(final String line) {
+    private void logToDisplay(final String Timestamp,final String Address, final String RSSI, final String Mark) {
         runOnUiThread(new Runnable() {
             public void run() {
-                TextView editText = (TextView) BeaconActivity.this.findViewById(R.id.rangingText);
-                ScrollingMovementMethod scroll = new ScrollingMovementMethod();
-                editText.setMovementMethod(scroll);
-                editText.append(line + "\n");
+                final TextView editTimestamp = (TextView) BeaconActivity.this.findViewById(R.id.timeStamp);
+                TextView editAddress = (TextView) BeaconActivity.this.findViewById(R.id.address);
+                TextView editRSSI = (TextView) BeaconActivity.this.findViewById(R.id.rssi);
+                TextView editMark = (TextView) BeaconActivity.this.findViewById(R.id.mark);
+                editTimestamp.append(Timestamp + "\n");
+                editAddress.append(Address + "\n");
+                editRSSI.append(RSSI + "\n");
+                editMark.append(Mark + "\n");
             }
         });
+    }
+
+    private void clearView(){
+        TextView editTimestamp = (TextView) BeaconActivity.this.findViewById(R.id.timeStamp);
+        TextView editAddress = (TextView) BeaconActivity.this.findViewById(R.id.address);
+        TextView editRSSI = (TextView) BeaconActivity.this.findViewById(R.id.rssi);
+        TextView editMark = (TextView) BeaconActivity.this.findViewById(R.id.mark);
+        editTimestamp.setText("");
+        editAddress.setText("");
+        editRSSI.setText("");
+        editMark.setText("");
     }
 
     private void raiseAtoast(int resID){
