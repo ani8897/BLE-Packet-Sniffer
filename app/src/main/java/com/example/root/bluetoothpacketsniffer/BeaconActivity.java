@@ -2,6 +2,8 @@ package com.example.root.bluetoothpacketsniffer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -34,7 +36,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
     public int clickCount = 0;
     public long baseTime=0,timeStamp=0;
     public List<String[]> data = new ArrayList<>();
-
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,17 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
 
     public void binding(){
         if(!beaconManager.isBound(this)) {
+
+            /*
+            Notification notification = new Notification(R.mipmap.ic_launcher,
+                    context.getString(R.string.app_name),
+                    System.currentTimeMillis());
+            notification.flags |= Notification.FLAG_NO_CLEAR
+                    | Notification.FLAG_ONGOING_EVENT;
+            NotificationManager notifier = (NotificationManager)
+                    context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notifier.notify(1, notification);*/
+
             baseTime = System.currentTimeMillis();
             raiseAtoast(R.string.startToast);
             data.add(new String[]{"Timestamp", "MAC Address", "RSSI (in dBm)", "Mark"});
@@ -158,7 +171,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
             File directory = new File(dirString);
             if(!directory.exists()) {
                 Log.i(TAG,"No directory");
-                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+                ContextWrapper cw = new ContextWrapper(context);
                 directory = cw.getDir(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/BData", Context.MODE_PRIVATE);
             }
 
@@ -179,9 +192,11 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
             }
         }
     }
+
     protected void onDestroy() {
         super.onDestroy();
         beaconManager.unbind(this);
+        //((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
     }
 
     @Override
@@ -195,9 +210,14 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
                     timeStamp = System.currentTimeMillis() - baseTime;
                     int s = beacons.toArray().length;
                     Beacon[] beaconArr = beacons.toArray(new Beacon[s]);
+                    //List<BeaconParser> beaconParserList = beaconManager.getBeaconParsers();
+                    //Log.d(TAG,Long.toString(beaconParserList.get(0).getDataFieldCount()));
+                    //Log.d(TAG,Long.toString(beaconParserList.get(1).bytesToHex(
+                     //       beaconParserList.get(1).getBeaconAdvertisementData()
+                    //)));
                     for(int i=0;i<s;i++) {
-                        Log.i(TAG, "Time:"+timeStamp+" Address: " + beaconArr[i].getBluetoothAddress()
-                                + " RSSI: " + beaconArr[i].getRssi() + " Marker: " + clickCount);
+                        //Log.i(TAG, "Time:"+timeStamp+" Address: " + beaconArr[i].getBluetoothAddress()
+                          //      + " RSSI: " + beaconArr[i].getRssi() + " Marker: " + clickCount);
                         logToDisplay(Long.toString(timeStamp),
                                 beaconArr[i].getBluetoothAddress(),
                                 Integer.toString(beaconArr[i].getRssi()),
@@ -222,8 +242,8 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         try {
             if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getApplicationContext().getString(R.string.noBluetooth));
-                builder.setMessage(getApplicationContext().getString(R.string.noBluetoothMessage));
+                builder.setTitle(context.getString(R.string.noBluetooth));
+                builder.setMessage(context.getString(R.string.noBluetoothMessage));
                 builder.setPositiveButton(android.R.string.ok, null);
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -237,8 +257,8 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
         }
         catch (RuntimeException e) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getApplicationContext().getString(R.string.noBLE));
-            builder.setMessage(getApplicationContext().getString(R.string.noBLEMessage));
+            builder.setTitle(context.getString(R.string.noBLE));
+            builder.setMessage(context.getString(R.string.noBLEMessage));
             builder.setPositiveButton(android.R.string.ok, null);
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
@@ -280,7 +300,7 @@ public class BeaconActivity extends Activity implements BeaconConsumer {
     }
 
     private void raiseAtoast(int resID){
-        Toast.makeText(getApplicationContext(), getApplicationContext().getString(resID),
+        Toast.makeText(context, context.getString(resID),
                 Toast.LENGTH_SHORT).show();
     }
 
